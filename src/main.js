@@ -1,10 +1,12 @@
-let mongo = require('mongodb').MongoClient;
-let ObjectId = require('mongodb').ObjectID;
+//let mongo = require('mongodb').MongoClient;
+//let ObjectId = require('mongodb').ObjectID;
 const led = require('./blink');
 const say = require('say');
+const sqlite3 = require('sqlite3').verbose();
+
 var Gpio = require('onoff').Gpio;
 var mqtt = require('mqtt');
-
+var databaseConnected = false;
 
 var pushButton = new Gpio(23, 'in', 'both');
 var callSpeakAgain = true;
@@ -25,6 +27,37 @@ var options = {
 	protocolVersion: 4,
 	clean: true,
 	encoding: 'utf8'
+}
+
+var db = new sqlite3.Database('./database/apphealth.db',sqlite3.OPEN_READWRITE, (err) => {
+	if (err){
+		console.error('Database Connection Failed', err.message);
+	}
+	this.databaseConnected = true;
+})
+
+function getAllRecords(){
+	let selectQuery = `SELECT source, region, message, datetime, severity, acknowledgement FROM tblAppHealth`;
+	this.db.all(selectQuery,[], (err,rows) => {
+		if (err){
+			throw err;
+		}
+		populateData(rows);
+	}
+	
+	);
+}
+
+function populateData(rows){
+	let elem = document.getElementById('show-message');
+	elem.innerHtml = '';
+	rows.forEach( (row) => {
+		var node = document.createElement("p");
+		node.classList.add("list-group-item");
+		var textnode = document.createTextNode(`Application ${row.source} From ${row.region} has message ${row.message} @${row.datetime}. The severity was ${row.severity}`);
+		node.appendChild(textnode);
+		elem.appendChild(node);
+	});
 }
 
 pushButton.watch(function(err, value) {
@@ -155,3 +188,5 @@ client.on('connect', function(err) {
 		})
 	})
 })
+
+getAllRecords();
