@@ -1,0 +1,23 @@
+{
+  "name": "app-health",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^5.0.4",
+    "mongodb": "^3.2.7",
+    "mqtt": "^3.0.0",
+    "onoff": "^4.1.2",
+    "say": "^0.16.0",
+    "sqlite3": "^4.0.9"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.8.5",
+    "electron-reload": "^1.4.0"
+  }
+}
